@@ -1,0 +1,8 @@
+#goal definition
+int32 max_obj
+---
+#result definition
+string[] detected_obj
+---
+#feedback
+int32[] sequence
