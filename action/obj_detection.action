@@ -1,5 +1,5 @@
 #goal definition
-int32 max_obj
+string to_detected_obj
 ---
 #result definition
 string[] detected_obj
