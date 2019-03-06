@@ -9,6 +9,14 @@
 #include <darknet_actions/obj_detectionAction.h>
 #include <darknet_ros_msgs/BoundingBoxes.h>
 
+struct less_by_xmin
+{
+    inline bool operator() (const darknet_ros_msgs::BoundingBox& box1, const darknet_ros_msgs::BoundingBox& box2)
+    {
+        return (box1.xmin < box2.xmin);
+    }
+};
+
 class ObjectDetection{
 protected:
     ros::NodeHandle nh_;
@@ -19,14 +27,16 @@ protected:
 public:
     ros::Subscriber cam_sub_;
     std::vector<std::string> obj_detection_buf_;
-    const darknet_ros_msgs::BoundingBoxes::ConstPtr* detected_boundingboxes_;
+    darknet_ros_msgs::BoundingBoxes detect_objs_;
+
+
     ObjectDetection(std::string name):
        as_(nh_, name, false),
        action_name_(name)
     {
         as_.registerGoalCallback(boost::bind(&ObjectDetection::goalCB,this));
         as_.registerPreemptCallback(boost::bind(&ObjectDetection::preemptCB,this));
-
+        cam_sub_ = nh_.subscribe<darknet_ros_msgs::BoundingBoxes>("darknet_ros/bounding_boxes", 1, &ObjectDetection::boundingboxesCallback, this);
         as_.start();
     }
 
@@ -36,22 +46,27 @@ public:
 
 
     void goalCB() {
-        ROS_INFO_STREAM("goal recevied");
-        cam_sub_ = nh_.subscribe<darknet_ros_msgs::BoundingBoxes>("darknet_ros/bounding_boxes", 1, &ObjectDetection::boundingboxesCallback, this);
-        as_.acceptNewGoal();
-        ROS_INFO_STREAM(obj_detection_buf_.size());
-        if (obj_detection_buf_.size() >=1 ) {
-            cam_sub_.shutdown();
-            for (int i = 0; i < obj_detection_buf_.size(); i++) {
-                ROS_INFO_STREAM(i+1<<". Obj: "<< obj_detection_buf_.at(i));
-                //result_.detected_obj[i] = obj_detection_buf_.at(i);
+
+        std::string to_detected_obj = as_.acceptNewGoal()->to_detected_obj;
+        std::string result_pos;
+        bool goal_detected = false;
+        ROS_INFO_STREAM("goal: "<<to_detected_obj);
+        if (detect_objs_.bounding_boxes.size() >=1 ) {
+            int j = 0;
+            for (int i = 0; i < detect_objs_.bounding_boxes.size(); i++) {
+                if(detect_objs_.bounding_boxes.at(i).Class == to_detected_obj) {
+                    j = i;
+                    goal_detected = true;
+                }
             }
-            obj_detection_buf_.clear();
-            ROS_INFO_STREAM("goal reached");
+            detect_objs_.bounding_boxes.clear();
+            if (goal_detected){
+            ROS_INFO_STREAM("to_detected_obj: "<<to_detected_obj<<" is at pos " <<j+1);
             as_.setSucceeded(result_);
         }else{
-            //as_.setAborted(result_);
+            ROS_INFO_STREAM(to_detected_obj<<" is detected or visible");
         }
+     }
     }
 
     void preemptCB() {
@@ -63,20 +78,14 @@ public:
     void boundingboxesCallback(const darknet_ros_msgs::BoundingBoxes::ConstPtr& detected_boundingboxes) {
         if (!as_.isActive())
             return;
-        detected_boundingboxes_ = &detected_boundingboxes;
+        detect_objs_ = *detected_boundingboxes;
         ROS_INFO_STREAM("scan recevied");
-        //cam_sub_.shutdown();
-        //const darknet_ros_msgs::BoundingBoxes::ConstPtr& left, mid, right;
-        //std::vector<> pos;
-        for (int i = 0; i < detected_boundingboxes->bounding_boxes.size(); i++) {
-            obj_detection_buf_.push_back(detected_boundingboxes->bounding_boxes.at(i).Class);
+        std::sort(detect_objs_.bounding_boxes.begin(), detect_objs_.bounding_boxes.end(), less_by_xmin());
 
+        for (int i = 0; i < detect_objs_.bounding_boxes.size(); i++) {
+            ROS_INFO_STREAM(detect_objs_.bounding_boxes.at(i).Class << " "
+                            <<detect_objs_.bounding_boxes.at(i).xmin);
         }
-
-        for (int i = 0; i < detected_boundingboxes->bounding_boxes.size(); i++) {
-
-        }
-        //detected_boundingboxes_->bounding_boxes.at(i);
     }
 };
 
