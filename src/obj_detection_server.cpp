@@ -29,7 +29,6 @@ public:
     std::vector<std::string> obj_detection_buf_;
     darknet_ros_msgs::BoundingBoxes detect_objs_;
     std::string to_detected_obj_;
-    bool busy_wait = true;
 
     ObjectDetection(std::string name):
        as_(nh_, name, false),
@@ -48,10 +47,7 @@ public:
 
     void goalCB() {
         cam_sub_ = nh_.subscribe<darknet_ros_msgs::BoundingBoxes>("darknet_ros/bounding_boxes", 10, &ObjectDetection::boundingboxesCallback, this);
-        busy_wait = true;
-        //while(busy_wait){};
         to_detected_obj_ = as_.acceptNewGoal()->to_detected_obj;
-
     }
 
     void preemptCB() {
@@ -84,11 +80,12 @@ public:
             detect_objs_.bounding_boxes.clear();
         if (goal_detected){
             ROS_INFO_STREAM("result: "<<to_detected_obj_<<" is at pos " <<result_pos+1);
-            //result_ = result_pos + 1;
+            result_.obj_pos = result_pos + 1;
             as_.setSucceeded(result_);
         }else{
             ROS_INFO_STREAM(to_detected_obj_<<" is detected or visible");
-            //result_ = result_pos;
+            result_.obj_pos = 0;
+            as_.setSucceeded(result_);
         }
         }
 
