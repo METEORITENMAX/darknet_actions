@@ -1,7 +1,7 @@
 #goal definition
 string to_detected_obj
 ---
-#result definition: "0" indicates no object found
+#result definition
 int32 obj_pos
 ---
 #feedback
