@@ -25,7 +25,7 @@ set (CMAKE_CXX_STANDARD 11)
    actionlib_msgs
  )
 catkin_package(
-   INCLUDE_DIRS include
+#   INCLUDE_DIRS include
 #  LIBRARIES darknet_actions
    CATKIN_DEPENDS roscpp rospy std_msgs actionlib_msgs
 #  DEPENDS system_lib
@@ -58,6 +58,11 @@ add_dependencies(
     obj_detection_server
     obj_detection_client
     ${darknet_actions_EXPORTED_TARGETS}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+ DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+ FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
 )
 
 
