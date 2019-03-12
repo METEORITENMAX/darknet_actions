@@ -93,8 +93,8 @@ public:
 };
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "objectdetection");
-    ObjectDetection obj_detect("objectdetection");
+    ros::init(argc, argv, "yolo_obj_detection_position_server");
+    ObjectDetection obj_detect("yolo_obj_detection_position_server");
     ros::spin();
     return 0;
 }
