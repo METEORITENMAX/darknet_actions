@@ -2,7 +2,7 @@
 #include <vector>
 //#include <tuple>
 #include <stdexcept>
-
+#include <string>
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
 
@@ -62,10 +62,24 @@ public:
         detect_objs_ = *detected_boundingboxes;
         ROS_INFO_STREAM("scan recevied");
         std::sort(detect_objs_.bounding_boxes.begin(), detect_objs_.bounding_boxes.end(), less_by_xmin());
-
-        for (int i = 0; i < detect_objs_.bounding_boxes.size(); i++) {
-            ROS_INFO_STREAM(detect_objs_.bounding_boxes.at(i).Class << " "
-                            <<detect_objs_.bounding_boxes.at(i).xmin);
+		std::vector<darknet_ros_msgs::BoundingBox>::iterator it = detect_objs_.bounding_boxes.begin();
+		std::vector<darknet_ros_msgs::BoundingBox>::iterator itlast = detect_objs_.bounding_boxes.begin();
+		int j = 0;
+		while (it != detect_objs_.bounding_boxes.end()) {
+			itlast = it;
+			ROS_INFO_STREAM(it->Class << " "
+			<<detect_objs_.bounding_boxes.at(j).xmin);
+			if(it->Class == "bottle" || it->Class == "cup" || it->Class =="traffic light"
+			|| it-> Class == "stop sign" || it->Class =="sports ball") {
+				it++;
+				if(itlast->Class == it->Class){
+					ROS_INFO_STREAM("second "<<it->Class<< " deleted");
+					it = detect_objs_.bounding_boxes.erase(it);
+				}
+			}else {
+				ROS_INFO_STREAM(it->Class<< " deleted");
+				it = detect_objs_.bounding_boxes.erase(it);
+			}
         }
         bool goal_detected = false;
         ROS_INFO_STREAM("goal: "<<to_detected_obj_<<std::endl<<" number of obj: "<<detect_objs_.bounding_boxes.size());
@@ -83,7 +97,7 @@ public:
             result_.obj_pos = result_pos + 1;
             as_.setSucceeded(result_);
         }else{
-            ROS_INFO_STREAM(to_detected_obj_<<" is detected or visible");
+			ROS_INFO_STREAM(to_detected_obj_<<" is not detected or visible");
             result_.obj_pos = 0;
             as_.setSucceeded(result_);
         }
