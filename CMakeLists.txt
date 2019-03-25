@@ -6,17 +6,11 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   actionlib_msgs
   actionlib
-  darknet_ros_msgs
+  darknet_actions_msgs
 )
 find_package(Boost REQUIRED COMPONENTS system)
 
 set (CMAKE_CXX_STANDARD 11)
-
-## Generate actions in the 'action' folder
- add_action_files(
-   FILES
-   obj_detection.action
-)
 
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
@@ -44,19 +38,19 @@ include_directories(
 )
 
 add_executable(obj_detection_server src/obj_detection_server.cpp)
-add_executable(obj_detection_client src/obj_detection_client.cpp)
+#add_executable(obj_detection_client src/obj_detection_client.cpp)
 
 target_link_libraries(
     obj_detection_server
     ${catkin_LIBRARIES}
 )
-target_link_libraries(
-    obj_detection_client
-    ${catkin_LIBRARIES}
-)
+#target_link_libraries(
+#    obj_detection_client
+#    ${catkin_LIBRARIES}
+#)
 add_dependencies(
     obj_detection_server
-    obj_detection_client
+	#obj_detection_client
     ${darknet_actions_EXPORTED_TARGETS}
 )
 

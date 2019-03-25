@@ -6,7 +6,7 @@
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
 
-#include <darknet_actions/obj_detectionAction.h>
+#include <darknet_actions_msgs/obj_detectionAction.h>
 #include <darknet_ros_msgs/BoundingBoxes.h>
 
 struct less_by_xmin
@@ -20,10 +20,10 @@ struct less_by_xmin
 class ObjectDetection{
 protected:
     ros::NodeHandle nh_;
-    actionlib::SimpleActionServer<darknet_actions::obj_detectionAction> as_;
+	actionlib::SimpleActionServer<darknet_actions_msgs::obj_detectionAction> as_;
     std::string action_name_;
-    darknet_actions::obj_detectionFeedback feedback_;
-    darknet_actions::obj_detectionResult result_;
+	darknet_actions_msgs::obj_detectionFeedback feedback_;
+	darknet_actions_msgs::obj_detectionResult result_;
 public:
     ros::Subscriber cam_sub_;
     std::vector<std::string> obj_detection_buf_;

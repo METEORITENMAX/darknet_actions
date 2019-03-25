@@ -5,7 +5,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 
-#include <darknet_actions/obj_detectionAction.h>
+#include <darknet_actions_msgs/obj_detectionAction.h>
 #include <darknet_ros_msgs/BoundingBoxes.h>
 #include <naoqi_wrapper_msgs/NaoQi_animatedSayAction.h>
 
