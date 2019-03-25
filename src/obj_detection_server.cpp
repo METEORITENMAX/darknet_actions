@@ -62,9 +62,9 @@ public:
         detect_objs_ = *detected_boundingboxes;
         ROS_INFO_STREAM("scan recevied");
         std::sort(detect_objs_.bounding_boxes.begin(), detect_objs_.bounding_boxes.end(), less_by_xmin());
+		/*
 		std::vector<darknet_ros_msgs::BoundingBox>::iterator it = detect_objs_.bounding_boxes.begin();
 		std::vector<darknet_ros_msgs::BoundingBox>::iterator itlast = detect_objs_.bounding_boxes.begin();
-		int j = 0;
 		while (it != detect_objs_.bounding_boxes.end()) {
 			itlast = it;
 			ROS_INFO_STREAM(it->Class << " "<<it->xmin);
@@ -81,6 +81,7 @@ public:
 				it = detect_objs_.bounding_boxes.erase(it);
 			}
         }
+		*/
         bool goal_detected = false;
         ROS_INFO_STREAM("goal: "<<to_detected_obj_<<std::endl<<" number of obj: "<<detect_objs_.bounding_boxes.size());
         if (detect_objs_.bounding_boxes.size() >=1 ) {
