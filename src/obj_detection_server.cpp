@@ -67,12 +67,12 @@ public:
 		int j = 0;
 		while (it != detect_objs_.bounding_boxes.end()) {
 			itlast = it;
-			ROS_INFO_STREAM(it->Class << " "
-			<<detect_objs_.bounding_boxes.at(j).xmin);
+			ROS_INFO_STREAM(it->Class << " "<<it->xmin);
 			if(it->Class == "bottle" || it->Class == "cup" || it->Class =="traffic light"
-			|| it-> Class == "stop sign" || it->Class =="sports ball") {
+			|| it-> Class == "stop sign")
+			{
 				it++;
-				if(itlast->Class == it->Class){
+				if(it != detect_objs_.bounding_boxes.end()  &&  itlast->Class == it->Class){
 					ROS_INFO_STREAM("second "<<it->Class<< " deleted");
 					it = detect_objs_.bounding_boxes.erase(it);
 				}
