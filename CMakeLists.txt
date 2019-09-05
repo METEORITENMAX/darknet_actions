@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   actionlib_msgs
   actionlib
-  darknet_actions_msgs
+  darknet_action_msgs
 )
 find_package(Boost REQUIRED COMPONENTS system)
 
